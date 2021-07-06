@@ -7,7 +7,7 @@ main.js :MAIN  'MAIN CODE'  <= this
 
 ran by node.js
 
-2021-7-1
+2021-7-7
 
 */
 'use strict'
@@ -42,7 +42,7 @@ client.on("guildCreate", guild  =>{
 client.on("message", async message => {
   	if (message.content.startsWith(BOT_DATA.PREFIX)){
     	const [command, ...args] = message.content.slice(BOT_DATA.PREFIX.length).split(' ');   
-      	if(command=="count"){
+      	if(command=="cc"||command=="countchannel"){
 			let roles = message.member.roles.cache.array().map((key,index)=>{
 				return key.id
 			})
@@ -76,10 +76,34 @@ client.on("message", async message => {
 			message.channel.send(`テキストチャンネル: ${CountOfTextChannel}\nボイスチャンネル: ${CountOfVoiceChannel}\nカテゴリ: ${CountOfCategory}\n総計: ${CountOfCategory+CountOfTextChannel+CountOfVoiceChannel}`);
 		}
 
+		if(command=="cr"||command=="countrole"){
+			let roles = message.member.roles.cache.array().map((key,index)=>{
+				return key.id
+			})
+			let haspermission = message.member.hasPermission("ADMINISTRATOR");
+		
+			GUILD_DATA.AdminRole.map((key,index)=>{
+				if(roles.indexOf(key)>-1) haspermission = true;
+			})
+		
+			if(!haspermission) return message.channel.send(`権限がありません。`);
+		
+			let Roles = message.guild.roles.cache.array().map((key,index)=>{
+				return [key.name,key.id];
+			});
+			
+			console.log(`-------------------------------------------\n${message.guild.name}の情報 :`);
+			console.log(Roles);
+			console.log(`総計: ${Roles.length}`);
+			console.log(`-------------------------------------------\n`);
+			if(args[0]=="-v") message.channel.send(Roles);
+			message.channel.send(`ロール総計: ${Roles.length}`);
+		}
+
 		if(command=="help"){
 			let msg = `コマンド: \`${BOT_DATA.PREFIX}count [-v]\` -vでチャンネル詳細表示\n`;
 			GUILD_DATA.AdminRole.map((key,index)=>{
-				msg = msg+`<@&${key}> `;
+				msg = msg+`\\<@&${key}> `;
 			});
 			msg = msg+`のロール保持者が実行可能`;
 			message.channel.send(msg);
