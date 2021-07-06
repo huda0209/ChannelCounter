@@ -3,7 +3,9 @@
 created by huda0209
 ChannelCounter for discord bot 
 
-main.js :MAIN  'MAIN CODE'  <= this
+main.js :MAIN  'MAIN CODE'   <= this
+	channelCount.js 'count of discord channles'
+	roleCount.js 'count of roles'
 
 ran by node.js
 
@@ -15,6 +17,10 @@ ran by node.js
 //node.js modules
 const fs = require('fs');
 const discord = require("discord.js");
+
+//functions
+const channelCount = require("./src/command/channelCount");
+const roleCount = require("./src/command/roleCount");
 
 //other 
 const client = new discord.Client({ws: {intents: discord.Intents.ALL}});
@@ -43,61 +49,11 @@ client.on("message", async message => {
   	if (message.content.startsWith(BOT_DATA.PREFIX)){
     	const [command, ...args] = message.content.slice(BOT_DATA.PREFIX.length).split(' ');   
       	if(command=="cc"||command=="countchannel"){
-			let roles = message.member.roles.cache.array().map((key,index)=>{
-				return key.id
-			})
-			let haspermission = message.member.hasPermission("ADMINISTRATOR");
-
-			GUILD_DATA.AdminRole.map((key,index)=>{
-				if(roles.indexOf(key)>-1) haspermission = true;
-			})
-
-			if(!haspermission) return message.channel.send(`権限がありません。`);
-
-			let channels = message.guild.channels.cache.array().map((key,index)=>{
-				return [key.type, key.name, key.id];
-			});
-			
-			let CountOfTextChannel=0;
-			let CountOfVoiceChannel=0;
-			let CountOfCategory=0;
-
-			channels.map((key,index)=>{
-				if(key[0]=="text") CountOfTextChannel++;
-				if(key[0]=="voice") CountOfVoiceChannel++;
-				if(key[0]=="category") CountOfCategory++;
-			});
-
-			console.log(`-------------------------------------------\n${message.guild.name}の情報 :`);
-			console.log(channels);
-			console.log(`テキストチャンネル: ${CountOfTextChannel}\nボイスチャンネル: ${CountOfVoiceChannel}\nカテゴリ: ${CountOfCategory}\n総計: ${CountOfCategory+CountOfTextChannel+CountOfVoiceChannel}`);
-			console.log(`-------------------------------------------\n`);
-			if(args[0]=="-v") message.channel.send(channels);
-			message.channel.send(`テキストチャンネル: ${CountOfTextChannel}\nボイスチャンネル: ${CountOfVoiceChannel}\nカテゴリ: ${CountOfCategory}\n総計: ${CountOfCategory+CountOfTextChannel+CountOfVoiceChannel}`);
+			channelCount.channelCount();
 		}
 
 		if(command=="cr"||command=="countrole"){
-			let roles = message.member.roles.cache.array().map((key,index)=>{
-				return key.id
-			})
-			let haspermission = message.member.hasPermission("ADMINISTRATOR");
-		
-			GUILD_DATA.AdminRole.map((key,index)=>{
-				if(roles.indexOf(key)>-1) haspermission = true;
-			})
-		
-			if(!haspermission) return message.channel.send(`権限がありません。`);
-		
-			let Roles = message.guild.roles.cache.array().map((key,index)=>{
-				return [key.name,key.id];
-			});
-			
-			console.log(`-------------------------------------------\n${message.guild.name}の情報 :`);
-			console.log(Roles);
-			console.log(`総計: ${Roles.length}`);
-			console.log(`-------------------------------------------\n`);
-			if(args[0]=="-v") message.channel.send(Roles);
-			message.channel.send(`ロール総計: ${Roles.length}`);
+			roleCount.roleCount();
 		}
 
 		if(command=="help"){
